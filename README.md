@@ -5,7 +5,7 @@ Node.js + TypeScript + Express + MariaDB/MySQL layered architecture.
 ## Architecture
 
 ```
-Client → Route → Controller → Service → Repository → Model → DB
+Client → Route → Controller → Service → Repository → Database
 ```
 
 ## Project Structure
@@ -19,8 +19,6 @@ homework/
 │   ├── controllers/UserController.ts   # HTTP handlers
 │   ├── config/database.ts          # DB connection
 │   └── app.ts                     # Server entry
-├── database/
-│   └── schema.sql                 # DB setup + sample data
 ├── .env                           # Config (not in git)
 ├── .env.example                   # Config template
 └── package.json
@@ -46,9 +44,27 @@ PORT=3000
 ```
 
 ### 3. Create database
-Run `database/schema.sql` in your MariaDB client (phpMyAdmin, HeidiSQL, or MySQL CLI).
+Run this SQL in your MariaDB client (phpMyAdmin, HeidiSQL, or MySQL CLI):
 
-It creates the database, `users` table, and **5 sample records**.
+```sql
+CREATE DATABASE IF NOT EXISTS homework3_db;
+
+USE homework3_db;
+
+CREATE TABLE IF NOT EXISTS users (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  email VARCHAR(255) NOT NULL UNIQUE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+INSERT INTO users (name, email) VALUES
+  ('Alice Johnson', 'alice@example.com'),
+  ('Bob Smith', 'bob@example.com'),
+  ('Charlie Brown', 'charlie@example.com'),
+  ('Diana Prince', 'diana@example.com'),
+  ('Evan Wright', 'evan@example.com');
+```
 
 ### 4. Run the server
 ```bash
