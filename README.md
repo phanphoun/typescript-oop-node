@@ -1,170 +1,103 @@
-# Homework3 - Advanced Layered Architecture with OOP Concepts
+# Homework3 - Layered Architecture with MariaDB
 
-This project demonstrates the **More Advanced** layered architecture pattern using Object-Oriented Programming (OOP) principles.
+Node.js + TypeScript + Express + MariaDB/MySQL layered architecture.
 
-## Architecture Flow
+## Architecture
 
 ```
-Client
-  ↓
-Route (API Endpoints)
-  ↓
-Controller (Request Handling)
-  ↓
-Service (Business Logic)
-  ↓
-Repository (Data Access)
-  ↓
-Model (Data Entity)
-  ↓
-DB (Database/Storage)
+Client → Route → Controller → Service → Repository → Model → DB
 ```
-
-## Layer Responsibilities
-
-### 1. **Model Layer** (`src/models/`)
-- Represents data entities and their structure
-- Contains business rules related to data validation
-- Implements OOP concepts: classes, interfaces, methods, factory patterns
-- **File**: `User.ts` - User entity with validation and factory methods
-
-### 2. **Repository Layer** (`src/repositories/`)
-- Handles all data access operations (CRUD)
-- Abstracts database implementation details
-- Implements OOP concepts: interfaces, dependency inversion
-- **File**: `UserRepository.ts` - Data access with in-memory storage
-
-### 3. **Service Layer** (`src/services/`)
-- Contains business logic and validation rules
-- Coordinates between Repository and Controller
-- Implements OOP concepts: dependency injection, encapsulation
-- **File**: `UserService.ts` - Business logic for user operations
-
-### 4. **Controller Layer** (`src/controllers/`)
-- Handles HTTP requests and responses
-- Delegates business logic to Service layer
-- Implements OOP concepts: dependency injection, single responsibility
-- **File**: `UserController.ts` - Request handlers for user endpoints
-
-### 5. **Route Layer** (`src/routes/`)
-- Defines API endpoints and URL patterns
-- Maps HTTP methods to Controller methods
-- **File**: `userRoutes.ts` - Route definitions for user API
-
-## OOP Concepts Demonstrated
-
-1. **Encapsulation**: Each layer encapsulates its own logic and data
-2. **Abstraction**: Interfaces hide implementation details (e.g., `IUserRepository`)
-3. **Inheritance**: Classes implement interfaces for contracts
-4. **Polymorphism**: Different implementations can be swapped (e.g., different repositories)
-5. **Dependency Injection**: Dependencies are injected via constructors
-6. **Factory Pattern**: Static factory methods for object creation (`User.create()`)
-7. **Single Responsibility Principle**: Each class has one clear purpose
-8. **Interface Segregation**: Clean, focused interfaces
 
 ## Project Structure
 
 ```
 homework/
 ├── src/
-│   ├── models/
-│   │   └── User.ts              # Data entity with OOP methods
-│   ├── repositories/
-│   │   └── UserRepository.ts    # Data access layer
-│   ├── services/
-│   │   └── UserService.ts       # Business logic layer
-│   ├── controllers/
-│   │   └── UserController.ts    # Request handling layer
-│   ├── routes/
-│   │   └── userRoutes.ts        # API route definitions
-│   └── app.ts                   # Main entry point
-├── package.json
-├── tsconfig.json
-└── README.md
+│   ├── models/User.ts              # User entity
+│   ├── repositories/UserRepository.ts  # Database queries
+│   ├── services/UserService.ts     # Business logic
+│   ├── controllers/UserController.ts   # HTTP handlers
+│   ├── config/database.ts          # DB connection
+│   └── app.ts                     # Server entry
+├── database/
+│   └── schema.sql                 # DB setup + sample data
+├── .env                           # Config (not in git)
+├── .env.example                   # Config template
+└── package.json
 ```
 
-## Installation
+## Setup
 
+### 1. Install dependencies
 ```bash
 npm install
 ```
 
-## Running the Application
+### 2. Configure database
+Copy `.env.example` to `.env` and fill in your MariaDB credentials:
 
-### Development Mode
-```bash
-npm run dev
+```
+DB_HOST=localhost
+DB_PORT=3306
+DB_USER=root
+DB_PASSWORD=your_password
+DB_NAME=homework3_db
+PORT=3000
 ```
 
-### Build and Run
+### 3. Create database
+Run `database/schema.sql` in your MariaDB client (phpMyAdmin, HeidiSQL, or MySQL CLI).
+
+It creates the database, `users` table, and **5 sample records**.
+
+### 4. Run the server
 ```bash
-npm run build
-npm start
+npm run dev     # development
+npm run build   # compile TypeScript
+npm start       # run compiled JS
 ```
 
 ## API Endpoints
 
-- `GET /api/users` - Get all users
-- `GET /api/users/:id` - Get user by ID
-- `POST /api/users` - Create new user
-  - Body: `{ "name": "John Doe", "email": "john@example.com" }`
-- `PUT /api/users/:id` - Update user
-  - Body: `{ "name": "Jane Doe", "email": "jane@example.com" }`
-- `DELETE /api/users/:id` - Delete user
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/health` | Check server status |
+| GET | `/api/users` | Get all users |
+| GET | `/api/users/:id` | Get user by ID |
+| POST | `/api/users` | Create user |
+| PUT | `/api/users/:id` | Update user |
+| DELETE | `/api/users/:id` | Delete user |
 
-## Example Usage
+## Test Commands (PowerShell)
 
-```bash
-# Create a user
-curl -X POST http://localhost:3000/api/users \
-  -H "Content-Type: application/json" \
-  -d '{"name":"John Doe","email":"john@example.com"}'
+```powershell
+# Health check
+Invoke-RestMethod -Uri http://localhost:3000/health
 
 # Get all users
-curl http://localhost:3000/api/users
+Invoke-RestMethod -Uri http://localhost:3000/api/users
 
 # Get user by ID
-curl http://localhost:3000/api/users/1234567890
+Invoke-RestMethod -Uri http://localhost:3000/api/users/1
+
+# Create user
+Invoke-RestMethod -Uri http://localhost:3000/api/users -Method POST `
+  -Body '{"name":"John Doe","email":"john@example.com"}' `
+  -ContentType 'application/json'
 
 # Update user
-curl -X PUT http://localhost:3000/api/users/1234567890 \
-  -H "Content-Type: application/json" \
-  -d '{"name":"Jane Doe"}'
+Invoke-RestMethod -Uri http://localhost:3000/api/users/1 -Method PUT `
+  -Body '{"name":"Jane Doe","email":"jane@example.com"}' `
+  -ContentType 'application/json'
 
 # Delete user
-curl -X DELETE http://localhost:3000/api/users/1234567890
+Invoke-RestMethod -Uri http://localhost:3000/api/users/1 -Method DELETE
 ```
 
-## Key Benefits of This Architecture
+## Layer Descriptions
 
-1. **Separation of Concerns**: Each layer has a single, well-defined responsibility
-2. **Testability**: Layers can be tested independently with mock dependencies
-3. **Maintainability**: Changes in one layer don't affect others
-4. **Scalability**: Easy to add new features or replace implementations
-5. **Reusability**: Components can be reused across different parts of the application
-6. **Flexibility**: Easy to swap implementations (e.g., change database)
-
-## Comparison with Other Architectures
-
-### Basic Architecture
-```
-Client → Route → Controller → Model → DB
-```
-- Simple but lacks separation of concerns
-- Business logic mixed with data access
-
-### Advanced Architecture
-```
-Client → Route → Controller → Service → Model → DB
-```
-- Better separation but data access still in Service layer
-- Service layer becomes bloated with data access logic
-
-### This Implementation (Homework3)
-```
-Client → Route → Controller → Service → Repository → Model → DB
-```
-- Complete separation of concerns
-- Each layer has a single responsibility
-- Easy to test, maintain, and scale
-- Follows SOLID principles and OOP best practices
+- **Model** (`User.ts`) — Defines what a user looks like
+- **Repository** (`UserRepository.ts`) — Runs SQL queries against MariaDB
+- **Service** (`UserService.ts`) — Validates data, checks business rules
+- **Controller** (`UserController.ts`) — Handles HTTP requests/responses
+- **Route** (`app.ts`) — Maps URLs to controller methods
